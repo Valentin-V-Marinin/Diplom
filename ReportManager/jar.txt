@@ -1,0 +1,5 @@
+ javac -d .\balanceReport\ -encoding UTF-8 -cp .\balanceReport .\balanceReport\*.java
+ jar -cmf balancereport.mf balanceReport.jar  -C balanceReport .\balanceReport   
+ java -jar balanceReport.jar    
+javac -d .\balanceReport\ -encoding windows-1251 -cp .\balanceReport .\balanceReport\*.java
+C:\GB\GB_HomeWorks\Reports> java -jar ..\balanceReport.jar 
