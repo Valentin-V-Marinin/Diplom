@@ -43,7 +43,7 @@ public class MainForm extends JFrame {
         JDesktopPane jDesktopPane = new JDesktopPane();
 
         JInternalFrame passLoginForm = new JInternalFrame("ReportManager", false, true, false, false);
-        accessForm = new AccessForm(passLoginForm, user);
+        accessForm = new AccessForm(passLoginForm, user, configData);
 
         mainForm.add(jDesktopPane);
         jDesktopPane.add(passLoginForm);
@@ -75,9 +75,6 @@ public class MainForm extends JFrame {
         passLoginForm.addInternalFrameListener(new InternalFrameAdapter() {
             @Override
             public void internalFrameClosed(InternalFrameEvent e) {
-                String login = accessForm.getUser().getAccessDB().getLogin();
-                String pass  = accessForm.getUser().getAccessDB().getPassword();
-                super.internalFrameClosed(e);
                 user.shapeList();
                 userListReports.setListData(user.getViewUserListReports());
                 user.loadUserName();
@@ -123,7 +120,7 @@ public class MainForm extends JFrame {
         String reportName = user.getUserListReports().get(idx).getReportAppName();
         try {
             mainForm.setVisible(false);
-            user.getReport().callReport(accessForm.getUser().getAccessDB().getLogin(), accessForm.getUser().getAccessDB().getPassword(),
+            user.getReport().callReport(user.getAccessDB().getLogin(), user.getAccessDB().getPassword(),
                     path, reportName).waitFor();
             mainForm.setVisible(true);
         } catch (InterruptedException e) {

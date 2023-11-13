@@ -15,10 +15,12 @@ public class AccessForm {
     private JTextField loginField;
     private JPasswordField passwordField;
     private final JInternalFrame jif;
+    private ConfigData configData;
 
 
-    public AccessForm(JInternalFrame jif, User user) {
+    public AccessForm(JInternalFrame jif, User user, ConfigData configData) {
         this.jif = jif;
+        this.configData = configData;
         accessGUI(jif);
         this.user = user;
     }
@@ -94,7 +96,7 @@ public class AccessForm {
         if (checkEmptyLogin()) return;
 
         user.setAccess(loginField.getText(), String.valueOf(passwordField.getPassword()));
-        user.getDb().setConnectDB("jdbc:mysql://localhost:3306/enterprise", user.getAccessDB().getLogin(), user.getAccessDB().getPassword());
+        user.getDb().setConnectDB(configData.getConfigInfoDB(), user.getAccessDB().getLogin(), user.getAccessDB().getPassword());
 
         if (user.getAccessDB().checkPassword()) {
             jif.doDefaultCloseAction();
