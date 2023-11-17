@@ -1,8 +1,7 @@
 package vvm.reportmanager.logic;
 
-import vvm.reportmanager.repository.DataBase;
-
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
 
 /**
  * класс для работы с отчетами, с набором полей для идентификации отчета
@@ -17,7 +16,7 @@ public class Report{
     private String reportViewName;   // название отчёта выводимое для пользователя
     private String reportAppName;    // название архива (jar) в который упакован отчет
     private String reportHash;       // hash отчета для обновления версий
-    private HashCount hashCount;     // объект класса для расчета hash отчета
+    private final HashCount hashCount;     // объект класса для расчета hash отчета
 
     public Report() {
         this.reportViewName = "";
@@ -38,8 +37,6 @@ public class Report{
     public Process callReport(String login, String pass, String path, String reportName) throws RuntimeException{
         Process p;
         try {
-            //String str = "java -classpath C:\\GB\\Reports balanceReport.BalanceReport " + login_pass[0] + " " +  login_pass[1];
-            //String str = "java -jar C:\\GB\\ReportManager\\Reports\\balanceReport.jar " + login_pass[0] + " " +  login_pass[1];
             String str = "java -jar " + path + reportName + " " + login + " " + pass;
             p = Runtime.getRuntime().exec(str);
         } catch (IOException e){
@@ -48,12 +45,79 @@ public class Report{
         return p;
     }
 
-    public String reportHashCount(){
-        return "";
+    /**
+     * Расчёт hash для файла переданного параметром
+     * @param fileName - файл для расчёта hash
+     * @return строка с hash числом
+     */
+    public String reportHashCount(String fileName){
+        return hashCount.getSHA256HashForFile(fileName);
     }
 
-    public void reportReplacement(){
+    /**
+     * Метод для замены старой версии отчёта его новой версией
+     * @param netFileName - файл новой версии отчёта, расположенный в сетевом хранилище
+     * @param localFileName - файл старой версии, расположенный на машине пользоваетеля
+     * @throws IOException
+     */
+    private void reportReplacement(String netFileName, String localFileName) throws IOException {
+        InputStream netFile = null;
+        OutputStream localFile = null;
+        try {
+            netFile = new FileInputStream(netFileName);
+            localFile = new FileOutputStream(localFileName);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = netFile.read(buffer)) > 0) {
+                localFile.write(buffer, 0, length);
+            }
+        } finally {
+            if (netFile != null) {
+                netFile.close();
+            }
+            if (localFile != null) {
+                localFile.close();
+            }
+        }
+    }
 
+    /**
+     * Метод сравнивает версии отчётов в локальном и сетевом хранилищах, при
+     * несовпадении версий(hash) копирует файл с отчётом из сетевого хранилища в локальное
+     * @param checkList - набор отчётов пользователя
+     * @param netPath - путь к сетевому хранилищу отчётов
+     * @param localPath - путь к локльному хранилищу отчётов
+     */
+    public void checkReportVersion(List<Report> checkList, String netPath, String localPath) throws IOException, RuntimeException {
+
+        String hashNetFile = "";
+        String hashLocalFile = "";
+        String localFileName = "";
+        String netFileName = "";
+
+        for (int i = 0; i < checkList.size(); i++) {
+            hashNetFile = checkList.get(i).getReportHash();
+            localFileName = localPath + checkList.get(i).getReportAppName();
+            netFileName = netPath + checkList.get(i).getReportAppName();
+
+            // если файл отсутствует в локальном хранилище отчётов
+            // (пользователю назначили новый отчёт)
+            File file = new File(localFileName);
+            if (file.exists()) {
+                hashLocalFile = reportHashCount(localPath + checkList.get(i).getReportAppName());
+            } else {
+                hashLocalFile = "0";
+            }
+
+            // проверям наличие файла отчёта в сетевом хранилище отчётов, ссли файл отсутствует
+            // у пользователя остаётся старая версия, сообщаем об этом в исключении
+            File netFile = new File(netFileName);
+            if (netFile.exists()) {
+                if (!hashNetFile.equals(hashLocalFile)) reportReplacement(netFileName, localFileName);
+            } else {
+                throw new RuntimeException("Файл отчёта отсутствует в сетевом хранилище!");
+            }
+        }
     }
 
     public String getReportViewName() {

@@ -25,17 +25,17 @@ public class HashCount {
      * @param filename файл для которго рассчитывается hash
      * @return возвращает строку с hash числом
      */
-    public String getMd5HashForFile(String filename) {
+    public String getSHA256HashForFile(String filename) {
         try {
-            var md = MessageDigest.getInstance("SHA-256");
+            var sha = MessageDigest.getInstance("SHA-256");
             var buffer = new byte[8192];
             try (var is = Files.newInputStream(Paths.get(filename))) {
                 int read;
                 while ((read = is.read(buffer)) > 0) {
-                    md.update(buffer, 0, read);
+                    sha.update(buffer, 0, read);
                 }
             }
-            byte[] digest = md.digest();
+            byte[] digest = sha.digest();
             return bytesToHex(digest);
         } catch (NoSuchAlgorithmException | IOException e) {
             throw new RuntimeException(e);
@@ -50,9 +50,9 @@ public class HashCount {
     public String alterHash(String str){
         String newstr = "";
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(str.getBytes());
-            byte[] digest = md.digest();
+            MessageDigest sha = MessageDigest.getInstance("SHA-256");
+            sha.update(str.getBytes());
+            byte[] digest = sha.digest();
             newstr = bytesToHex(digest);
         } catch (NoSuchAlgorithmException e) {
             System.out.println(e.getMessage());

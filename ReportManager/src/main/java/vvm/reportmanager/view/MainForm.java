@@ -2,7 +2,6 @@ package vvm.reportmanager.view;
 
 import vvm.reportmanager.logic.ConfigData;
 import vvm.reportmanager.logic.User;
-import vvm.reportmanager.repository.DataBase;
 
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
@@ -12,12 +11,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
+import java.io.IOException;
 
 public class MainForm extends JFrame {
 
     private JFrame mainForm;
-    private AccessForm accessForm;
     private final User user;
     private final ConfigData configData;
 
@@ -43,7 +41,7 @@ public class MainForm extends JFrame {
         JDesktopPane jDesktopPane = new JDesktopPane();
 
         JInternalFrame passLoginForm = new JInternalFrame("ReportManager", false, true, false, false);
-        accessForm = new AccessForm(passLoginForm, user, configData);
+        AccessForm accessForm = new AccessForm(passLoginForm, user, configData);
 
         mainForm.add(jDesktopPane);
         jDesktopPane.add(passLoginForm);
@@ -71,15 +69,21 @@ public class MainForm extends JFrame {
         mainForm.setVisible(true);
         passLoginForm.setVisible(true);
 
-        // получаем имя пользователя и список его отчётов
+        // получаем имя пользователя и список его отчётов, проверяем версии отчётов
         passLoginForm.addInternalFrameListener(new InternalFrameAdapter() {
             @Override
             public void internalFrameClosed(InternalFrameEvent e) {
-                user.shapeList();
+                user.shapeListReports();
                 userListReports.setListData(user.getViewUserListReports());
                 user.loadUserName();
                 mainLab.setText("Пользователь: " + user.getUserName());
                 mainForm.repaint();
+                try {
+                    user.getReport().checkReportVersion(user.getUserListReports(),
+                            configData.getReportsNetDir(),configData.getReportsHomeDir());
+                } catch (IOException | RuntimeException ex) {
+                    JOptionPane.showMessageDialog(mainForm, ex.getMessage(), "ReportManager", JOptionPane.ERROR_MESSAGE);
+                }
                 btnSelect.setEnabled(true); btnExit.setEnabled(true);
                 userListReports.setEnabled(true);
             }
@@ -120,11 +124,14 @@ public class MainForm extends JFrame {
         String reportName = user.getUserListReports().get(idx).getReportAppName();
         try {
             mainForm.setVisible(false);
-            user.getReport().callReport(user.getAccessDB().getLogin(), user.getAccessDB().getPassword(),
-                    path, reportName).waitFor();
+            Process p = user.getReport().callReport(user.getAccessDB().getLogin(), user.getAccessDB().getPassword(),
+                    path, reportName);
+            p.waitFor();
+            p.destroy();
             mainForm.setVisible(true);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
+            //JOptionPane.showMessageDialog(mainForm, e.getMessage(), "ReportManager", JOptionPane.ERROR_MESSAGE);
         }
     }
 

@@ -15,7 +15,7 @@ public class ReportManagerApp {
         SwingUtilities.invokeLater(
                 new Runnable() {
                     @Override
-                    public void run() {
+                    public void run(){
                        new MainForm(new User(new DataBase()), configData);
                     }
                 }

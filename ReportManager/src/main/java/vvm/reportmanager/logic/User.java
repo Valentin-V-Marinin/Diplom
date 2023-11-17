@@ -30,7 +30,7 @@ public class User {
      * jar-архив отчёта и hash отчёта
      * @return List<Report>
      */
-    public List<Report> shapeList(){
+    public List<Report> shapeListReports(){
         String query = "CALL ADMIN(2,0,0,'"+ accessDB.getLogin() +"','" + accessDB.getPassword() + "');";
         String[] setReports = db.loadInfo(query, 3);
         for (int i = 0; i < setReports.length; i++) {
@@ -44,8 +44,8 @@ public class User {
     }
 
     /**
-     * Метод возвращает набор отчетов пользователя, состоящий из
-     * названий отчётов
+     * Метод возвращает набор отчетов пользователя, предназначенный
+     * для отображения этого набора отчётов пользователю
      * @return возвращает набор отчётов в виде массива типа String
      */
     public String[] getViewUserListReports(){

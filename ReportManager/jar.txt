@@ -3,3 +3,7 @@
  java -jar balanceReport.jar    
 javac -d .\balanceReport\ -encoding windows-1251 -cp .\balanceReport .\balanceReport\*.java
 C:\GB\GB_HomeWorks\Reports> java -jar ..\balanceReport.jar 
+
+
+//String str = "java -classpath C:\\GB\\Reports balanceReport.BalanceReport " + login_pass[0] + " " +  login_pass[1];
+//String str = "java -jar C:\\GB\\ReportManager\\Reports\\balanceReport.jar " + login_pass[0] + " " +  login_pass[1];
