@@ -1,0 +1,9 @@
+balanceReport\repository\DataBase.class
+balanceReport\logic\ReportData.class
+balanceReport\logic\ConfigData.class
+balanceReport\logic\ReportChecks.class
+balanceReport\view\ViewBalanceReport$1.class
+balanceReport\logic\iRepo.class
+balanceReport\BalanceReport.class
+balanceReport\view\ViewBalanceReport.class
+balanceReport\view\ViewBalanceReport$2.class
