@@ -1,5 +1,7 @@
 package balanceReport;
 
+import balanceReport.logic.ReportData;
+import balanceReport.repository.DataBase;
 import balanceReport.view.ViewBalanceReport;
 
 public class BalanceReport {
@@ -7,6 +9,6 @@ public class BalanceReport {
         String[] arr = new String[2];
         arr[0] = "vgb";
         arr[1] = "1234567";
-        new ViewBalanceReport(arr);
+        new ViewBalanceReport(arr, new ReportData(new DataBase()));
     }
 }

@@ -1,27 +1,25 @@
 package balanceReport.view;
 
-import balanceReport.logic.ReportChecks;
+import balanceReport.logic.ReportData;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
-import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ViewBalanceReport extends JFrame {
 
     private final JFrame mainForm;
-    private String[] args;
+    private final String[] args;
+    private final ReportData db;
 
 
-    public ViewBalanceReport(String[] args){
+    public ViewBalanceReport(String[] args, ReportData db){
 
         this.args = args;
+        this.db = db;
         mainForm = new JFrame();
         mainForm.setTitle("Отчёт БАЛАНС");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,7 +27,6 @@ public class ViewBalanceReport extends JFrame {
         setGUI();
 
         setPreferredSize(new Dimension(450, 350));
-        pack();
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -76,52 +73,29 @@ public class ViewBalanceReport extends JFrame {
         btnPanel.add(selectBtn); btnPanel.add(saveBtn); btnPanel.add(closeBtn);
 
         params.setLayout(null);
-        JLabel dateLabel   = new JLabel("Дата выборки (dd/mm/yyyy): ");
-        JLabel choiceLabel = new JLabel("Формат для сохранения:     ");
+        JLabel dateLabel   = new JLabel("Дата выборки           ");
+        JLabel choiceLabel = new JLabel("Формат для сохранения: ");
         JXDatePicker datePicker = new JXDatePicker();
-//        MaskFormatter fmt;
-//        try {
-//            fmt = new MaskFormatter("##/##/####");
-//        } catch (ParseException e) {
-//            throw new RuntimeException(e);
-//        }
-//        JFormattedTextField dateSelection = new JFormattedTextField(fmt);
 
-        String[] items = {"  text  ", "  excel  ", "   xml   "};
+        String[] items = {"  text   ", "  excel  ", "  xml    "};
         JComboBox<String> comboBox = new JComboBox<>(items);
         dateLabel.setBounds(20,10,175, 20);
-        //dateSelection.setBounds(190,10,100, 20);
         datePicker.setBounds(190,10,100, 20);
         choiceLabel.setBounds(20,40,175, 20);
         comboBox.setBounds(190,40,100, 20);
-        params.add(dateLabel); params.add(datePicker);//params.add(dateSelection);
+        params.add(dateLabel); params.add(datePicker);
         params.add(choiceLabel); params.add(comboBox);
 
         add(content);
 
-        selectBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-                Date date = datePicker.getDate();
-                JOptionPane.showMessageDialog(mainForm, "Текущая дата: " + dateFormat.format(date));
-//                try {
-//                    if (ReportChecks.checkDate((String) dateSelection.getValue())) {
-//                        JOptionPane.showMessageDialog(mainForm, "Некорректная дата!");
-//                    } else {
-//                        JOptionPane.showMessageDialog(mainForm, dateSelection.getValue());
-//                    }
-//                } catch (NullPointerException en){
-//                    JOptionPane.showMessageDialog(mainForm, "Ошибка! Пустая дата!");
-//                }
-                //db.select();
-            }
+        selectBtn.addActionListener(e -> {
+            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            Date date = datePicker.getDate();
+            JOptionPane.showMessageDialog(mainForm, "Текущая дата: " + dateFormat.format(date));
+            db.getDb().setConnectDB();
         });
 
-        closeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        closeBtn.addActionListener(e -> System.exit(0));
 
 
     }
