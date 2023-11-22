@@ -1,6 +1,7 @@
 package balanceReport.view;
 
 import balanceReport.logic.ReportData;
+import balanceReport.logic.iRepo;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -25,13 +26,15 @@ public class ViewBalanceReport extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setGUI();
-
-        setPreferredSize(new Dimension(450, 350));
+        pack();
+        setPreferredSize(new Dimension(450,450));
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
     public void setGUI(){
+
+
         Font font = new Font("Times New Roman", Font.PLAIN, 12);
         final JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setFont(font);
@@ -92,7 +95,8 @@ public class ViewBalanceReport extends JFrame {
             DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
             Date date = datePicker.getDate();
             JOptionPane.showMessageDialog(mainForm, "Текущая дата: " + dateFormat.format(date));
-            db.getDb().setConnectDB();
+            db.getDb().setConnectDB("",args[0], args[1]);
+            db.getDb().loadInfo("",3);
         });
 
         closeBtn.addActionListener(e -> System.exit(0));
