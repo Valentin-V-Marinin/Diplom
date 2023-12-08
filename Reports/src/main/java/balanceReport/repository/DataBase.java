@@ -19,7 +19,7 @@ public class DataBase implements iRepo {
 
     public DataBase(String url, String user, String password) {
         if (url.length() == 0) {
-            this.url = "jdbc:mysql://localhost:3306/enterprise";
+            this.url = "jdbc:mysql://ice9:3306/enterprise";
         } else {
             this.url = url;
         }
@@ -71,7 +71,7 @@ public class DataBase implements iRepo {
                 } else {
                     String strResult = "";
                     for (int i = 1; i <= columnNumber; i++) {
-                        strResult += rs.getString(i) + " ";
+                        strResult += rs.getString(i) + ";";
                     }
                     resultArrList.add(strResult);
                 }
