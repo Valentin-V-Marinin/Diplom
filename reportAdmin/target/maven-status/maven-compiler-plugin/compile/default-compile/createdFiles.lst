@@ -1,0 +1,13 @@
+reportAdmin\logic\ConfigData.class
+reportAdmin\ReportsAdmin.class
+reportAdmin\view\iView.class
+reportAdmin\ReportsAdmin$1.class
+reportAdmin\view\ViewReport.class
+reportAdmin\repository\ReportsDB.class
+reportAdmin\view\ReportFieldsPanel.class
+reportAdmin\logic\Report.class
+reportAdmin\repository\iReportsRepo.class
+reportAdmin\view\ReportListPanel.class
+reportAdmin\presenter\iReportPresenter.class
+reportAdmin\logic\HashCount.class
+reportAdmin\presenter\ReportPresenter.class
