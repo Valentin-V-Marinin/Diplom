@@ -12,7 +12,7 @@ import java.util.List;
 public class User {
     private String userName;                // имя пользователя
     private final AccessDB accessDB;        // класс для работы с доступом к БД
-    private final Report report;            // класс для работы с отчётами
+    private Report report;                  // класс для работы с отчётами
     private List<Report> userListReports;   // перечень отчётов доступных пользователю
     private iRepo db;                       // подключаемая БД
 
@@ -33,12 +33,14 @@ public class User {
     public List<Report> shapeListReports(){
         String query = "CALL ADMIN(2,0,0,'"+ accessDB.getLogin() +"','" + accessDB.getPassword() + "');";
         String[] setReports = db.loadInfo(query, 3);
+        Report[] reports = new Report[setReports.length];
         for (int i = 0; i < setReports.length; i++) {
             String[] str = setReports[i].split(" ");
-            report.setReportViewName(str[0]);
-            report.setReportAppName(str[1]);
-            report.setReportHash(str[2]);
-            userListReports.add(report);
+            reports[i] = new Report();
+            reports[i].setReportViewName(str[0]);
+            reports[i].setReportAppName(str[1]);
+            reports[i].setReportHash(str[2]);
+            userListReports.add(reports[i]);
         }
         return userListReports;
     }
@@ -58,7 +60,7 @@ public class User {
 
     /**
      * Метод получает имя пользователя из БД
-     * @return вовращет строку с именем пользователя
+     * @return возвращает строку с именем пользователя
      */
     public void loadUserName(){
         String query = "call ADMIN(3,0,0,'" + accessDB.getLogin() + "', '" + accessDB.getPassword() + "');";

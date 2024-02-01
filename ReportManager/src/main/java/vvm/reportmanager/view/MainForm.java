@@ -20,7 +20,6 @@ public class MainForm extends JFrame {
     private final ConfigData configData;
 
 
-
     public MainForm(User user, ConfigData configData) {
         this.user = user;
         this.configData = configData;
@@ -28,11 +27,12 @@ public class MainForm extends JFrame {
     }
 
     /**
-     * Настройка главой формы.
+     * Настройка главной формы.
      * добавление компонентов и обработчиков событий
      */
     private void setGUI(){
-        mainForm = new JFrame("ReportManager");
+        mainForm = this;
+        mainForm.setTitle("ReportManager");
         mainForm.setLayout(new BorderLayout());
         mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainForm.setBounds(600, 250, 455, 400);
@@ -120,19 +120,17 @@ public class MainForm extends JFrame {
      * приложением упакованным в jar
      */
     public void callReport(int idx) {
+        String configFile = configData.getConfigFile();
         String path = configData.getReportsHomeDir();
         String reportName = user.getUserListReports().get(idx).getReportAppName();
+        mainForm.setVisible(false);
         try {
-            mainForm.setVisible(false);
             Process p = user.getReport().callReport(user.getAccessDB().getLogin(), user.getAccessDB().getPassword(),
-                    path, reportName);
-            p.waitFor();
-            p.destroy();
-            mainForm.setVisible(true);
-        } catch (InterruptedException e) {
+                    configFile, path, reportName);
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-            //JOptionPane.showMessageDialog(mainForm, e.getMessage(), "ReportManager", JOptionPane.ERROR_MESSAGE);
         }
+        mainForm.setVisible(true);
     }
 
 

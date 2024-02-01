@@ -1,8 +1,11 @@
-{"AppHomeDir":"C:\GB\GB_HomeWorks\ReportManager\\",
+{"AppHomeDir":"C:\GB\ReportManager\\",
  "ReportsHomeDir":"C:\GB\ReportManager\Reports\\",
  "ReportsNetDir":"C:\Soft\Reports\\",
- "ReportsResultDir":"C:\GB\ReportManager\Reports\\",
- "ConfigInfoDB":"jdbc:mysql://localhost:3306/enterprise"}
+ "ReportsResultDir":"C:\GB\ReportManager\Documents\\",
+ "ConfigInfoDB":"jdbc:mysql://ice9:3306/enterprise",
+ "HostDB":"ICE9",
+ "ConfigFile":"C:\GB\ReportManager\Config.json"
+}
 
 
 
