@@ -26,8 +26,8 @@ public class ViewBalanceReport extends JFrame {
         this.args = args;
         this.db = db;
         this.configData = configData;
-        mainForm = new JFrame();
-        mainForm.setTitle("Отчёт БАЛАНС");
+        mainForm = this;
+        setTitle("Отчёт БАЛАНС");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(450,300));
 
@@ -49,7 +49,9 @@ public class ViewBalanceReport extends JFrame {
         content.setLayout(new BorderLayout());
 
         // панели заголовка, параметров и выборки
-        JPanel header = new JPanel(); JPanel params = new JPanel(); JPanel selection = new JPanel();
+        JPanel header = new JPanel();
+        JPanel params = new JPanel();
+        JPanel selection = new JPanel();
 
         header.setPreferredSize(new Dimension(content.getWidth(), 30));
         content.add(header, BorderLayout.NORTH);

@@ -1,0 +1,4 @@
+1. вычисление hash
+2. https://devmark.ru/article/md5-hashing
+3. https://ru.wikipedia.org/wiki/Хеш-функция
+4. https://ru.wikipedia.org/wiki/UML
