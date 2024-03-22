@@ -30,4 +30,7 @@ public class ReportListPanel extends JPanel {
         return listSelectionModel;
     }
 
+    public JScrollPane getjScrollPane() {
+        return jScrollPane;
+    }
 }

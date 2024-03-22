@@ -1,31 +1,28 @@
 package balanceReport.view;
 
-import balanceReport.logic.ConfigData;
-import balanceReport.logic.ReportSaver;
-import balanceReport.logic.ReportData;
+import balanceReport.presenter.PresenterBalanceReport;
+import balanceReport.presenter.iPresenterBalanceReport;
+import balanceReport.repository.DataBase;
 import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXLabel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
-public class ViewBalanceReport extends JFrame {
+public class ViewBalanceReport extends JFrame implements iViewBalanceReport{
 
     private final JFrame mainForm;
     private final String[] args;
-    private final ReportData db;
-    private final ConfigData configData;
+    private JTextArea textArea;
+    private JXDatePicker datePicker;
+    private JTabbedPane tabbedPane;
+    private iPresenterBalanceReport presenterBalanceReport;
 
 
-    public ViewBalanceReport(String[] args, ReportData db, ConfigData configData){
+    public ViewBalanceReport(String[] args) {
 
         this.args = args;
-        this.db = db;
-        this.configData = configData;
         mainForm = this;
         setTitle("Отчёт БАЛАНС");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,7 +38,7 @@ public class ViewBalanceReport extends JFrame {
     public void setGUI(){
 
         Font font = new Font("Times New Roman", Font.PLAIN, 12);
-        final JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
         tabbedPane.setFont(font);
 
         // основная панель
@@ -65,7 +62,7 @@ public class ViewBalanceReport extends JFrame {
         tabbedPane.addTab("выборка  ", selection);
 
         selection.setLayout(new BorderLayout());
-        JTextArea textArea = new JTextArea();
+        textArea = new JTextArea();
         selection.add(textArea, BorderLayout.CENTER);
         selection.add(new JPanel(), BorderLayout.SOUTH);
 
@@ -85,7 +82,7 @@ public class ViewBalanceReport extends JFrame {
         params.setLayout(null);
         JLabel dateLabel   = new JLabel("Дата выборки           ");
         JLabel choiceLabel = new JLabel("Формат для сохранения: ");
-        JXDatePicker datePicker = new JXDatePicker();
+        datePicker = new JXDatePicker();
 
         String[] items = {"  text   ", "  html   ", "  excel  "};
         JComboBox<String> comboBox = new JComboBox<>(items);
@@ -96,48 +93,36 @@ public class ViewBalanceReport extends JFrame {
         params.add(dateLabel); params.add(datePicker);
         params.add(choiceLabel); params.add(comboBox);
 
+        setPresenter(new PresenterBalanceReport(new DataBase(), this, args));
+
         add(content);
 
-//        DateFormat dateFormatLabel = new SimpleDateFormat("вв-ЬЬ-yyyy");
-//        datePicker.addActionListener(e ->{
-//            JLabel lab = new JLabel(header.getComponent(0));// = "БАЛАНС за " + dateFormatLabel.format(datePicker.getDate());
-//            System.out.println(lab);
-//        });
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         selectBtn.addActionListener(e -> {
-            Date date = datePicker.getDate();
-            db.setConnectDB(configData.getConfigInfoDB(),args[0], args[1]);
-            db.setQuery(dateFormat.format(date));
-            db.setResultSelection(db.loadInfo(db.getQuery(),3));
-            for (String str: db.getResultSelection()) {
-                textArea.append(str + "\n");
-            }
-            tabbedPane.setSelectedIndex(1);
+            presenterBalanceReport.getData();
         });
 
         saveBtn.addActionListener(e -> {
-            ReportSaver reportSaver = new ReportSaver();
-            try {
-                Date date = datePicker.getDate();
-                switch (comboBox.getSelectedIndex()){
-                    case 0: reportSaver.saveTXT(db.getResultSelection(), dateFormat.format(date), "", "БАЛАНС", configData);
-                            break;
-                    case 1: reportSaver.saveHTML(db.getResultSelection(), dateFormat.format(date), "", "БАЛАНС", configData);
-                            break;
-                    case 2: reportSaver.saveExcel(db.getResultSelection(), dateFormat.format(date), "", "БАЛАНС", configData);
-                            break;
-                }
-                JOptionPane.showMessageDialog(mainForm, "Отчет сохранён в папке отчётов.", "Отчет БАЛАНС", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(mainForm, ex, "Отчет БАЛАНС", JOptionPane.ERROR_MESSAGE);
-            }
+            presenterBalanceReport.saveData(comboBox.getSelectedIndex(), this);
         });
 
         closeBtn.addActionListener(e -> System.exit(0));
-
-
     }
 
 
+    @Override
+    public void getData(ArrayList<String> db) {
+        textArea.setText("");
+        for (String str: db) {
+            textArea.append(str + "\n");
+        }
+        tabbedPane.setSelectedIndex(1);
+    }
+
+    @Override
+    public Date sendData() {
+        return datePicker.getDate();
+    }
+
+    private void setPresenter(iPresenterBalanceReport presenterBalanceReport)
+    {this.presenterBalanceReport = presenterBalanceReport;}
 }

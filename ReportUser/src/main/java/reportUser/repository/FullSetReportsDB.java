@@ -4,8 +4,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
-import reportUser.logic.FullReportsSet;
-import reportUser.logic.User;
+import reportUser.model.FullReportsSet;
+import reportUser.model.User;
 
 import java.util.List;
 

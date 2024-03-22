@@ -1,7 +1,7 @@
 package reportUser.presenter;
 
-import reportUser.logic.FullReportsSet;
-import reportUser.logic.UserReportsSet;
+import reportUser.model.FullReportsSet;
+import reportUser.model.UserReportsSet;
 import reportUser.repository.iFullSetReportsRepo;
 import reportUser.repository.iUserSetReportsRepo;
 import reportUser.view.iViewSetReports;
@@ -45,7 +45,7 @@ public class SetReportsPresenter implements iSetReportsPresenter{
     }
 
     /**
-     * Загрузка полного набора отчетов пользователя
+     * Получение полного набора отчетов пользователя
      */
     @Override
     public void loadFullSetReports(){

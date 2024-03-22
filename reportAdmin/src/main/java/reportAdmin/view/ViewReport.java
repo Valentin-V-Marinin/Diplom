@@ -1,11 +1,13 @@
 package reportAdmin.view;
 
-import reportAdmin.logic.ConfigData;
-import reportAdmin.logic.HashCount;
-import reportAdmin.logic.Report;
+import reportAdmin.model.ConfigData;
+import reportAdmin.model.HashCount;
+import reportAdmin.model.Report;
 import reportAdmin.presenter.ReportPresenter;
 import reportAdmin.presenter.iReportPresenter;
 import reportAdmin.repository.ReportsDB;
+import reportAdmin.repository.UserReportsDB;
+import reportAdmin.repository.UsersDB;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,16 +27,14 @@ public class ViewReport extends JFrame implements iView<Report> {
     private Report selectedReport;
     private final ViewReport mainFrame;
     private ConfigData configData;
-
     private HashCount hashCount;
-
     private iReportPresenter reportPresenter;
-
+    private boolean selectionModeEnabled;
 
     public ViewReport(String[] args){
 
         mainFrame = this;
-        setTitle("УПРАВЛЕНИЕ ОТЧЁТАМИ");
+        setTitle("АДМИНИСТРАТИВНЫЙ_ОТЧЁТ");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(620,330));
@@ -59,14 +59,14 @@ public class ViewReport extends JFrame implements iView<Report> {
         JPanel basicPanel = new JPanel(new BorderLayout());
 
 
-        // панель заголовок
+        // панель-заголовок, содержит текущий активный отчёт
         JPanel headpanel = new JPanel();
         headpanel.setPreferredSize(new Dimension(mainFrame.getWidth(), 30));
         JLabel headLabel = new JLabel();
         headpanel.add(headLabel);
 
 
-        // панель с дтальной информацией об отчёте
+        // панель с детальной информацией об отчёте
         reportFieldsPanel = new ReportFieldsPanel();
         GridLayout reportGridLayout = new GridLayout();
         reportGridLayout.setColumns(2); reportGridLayout.setRows(7);
@@ -75,14 +75,16 @@ public class ViewReport extends JFrame implements iView<Report> {
 
         reportListPanel = new ReportListPanel();
 
-        // инициализация контроллера
+        // инициализация контроллера(презентера)
         setController(new ReportPresenter(
                             new ReportsDB("reports.cfg.xml"),
+                            new UserReportsDB("userReports.cfg.xml"),
+                            new UsersDB("users.cfg.xml"),
                             mainFrame)
                     );
 
 
-        // панель кнопок управления списком
+        // панель кнопок управления списком отчётов
         JPanel btnPanel = new JPanel();
         btnPanel.setPreferredSize(new Dimension(110, 220));
         btnPanel.setLayout(new FlowLayout());
@@ -91,13 +93,15 @@ public class ViewReport extends JFrame implements iView<Report> {
         JButton addBtn = new JButton("добавить");
         JButton editBtn = new JButton("изменить");
         JButton delBtn = new JButton("удалить");
+        JButton userBtn = new JButton("персонал");
         loadBtn.setPreferredSize(new Dimension(100, 25));
         clearBtn.setPreferredSize(new Dimension(100, 25));
         addBtn.setPreferredSize(new Dimension(100, 25));
         editBtn.setPreferredSize(new Dimension(100, 25));
         delBtn.setPreferredSize(new Dimension(100, 25));
-        btnPanel.add(loadBtn); btnPanel.add(clearBtn); btnPanel.add(addBtn);
-        btnPanel.add(editBtn); btnPanel.add(delBtn);
+        userBtn.setPreferredSize(new Dimension(100, 25));
+        btnPanel.add(loadBtn); btnPanel.add(clearBtn);  btnPanel.add(addBtn);
+        btnPanel.add(editBtn); btnPanel.add(delBtn);    btnPanel.add(userBtn);
 
         // панель кнопок управления отчетом (закрыть отчет)
         JPanel btnRepPanel = new JPanel();
@@ -118,7 +122,7 @@ public class ViewReport extends JFrame implements iView<Report> {
  // обработчики нажатия кнопок
         closeBtn.addActionListener(e ->{
             try {
-                //reportFieldsPanel.getPresenter().closeDB();
+                reportPresenter.closeDB();
                 System.exit(0);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(mainFrame, ex.getMessage(),
@@ -154,7 +158,9 @@ public class ViewReport extends JFrame implements iView<Report> {
 
         loadBtn.addActionListener(e -> {
             try {
+                selectionModeEnabled = true;
                 clearBtn.doClick();
+                userBtnChangeState(true, btnPanel);
                 reportPresenter.getAllReports();
             } catch (Exception ex){
                 JOptionPane.showMessageDialog(mainFrame, ex.getMessage(),
@@ -163,11 +169,13 @@ public class ViewReport extends JFrame implements iView<Report> {
         });
 
         clearBtn.addActionListener(e -> {
+            selectedReport = null;
             reportFieldsPanel.clearData();
             headLabel.setText("");
             addBtn.setEnabled(true);
             editBtn.setEnabled(false);
             delBtn.setEnabled(false);
+            headpanel.repaint();
         });
 
         delBtn.addActionListener(e -> {
@@ -176,11 +184,21 @@ public class ViewReport extends JFrame implements iView<Report> {
                 loadBtn.doClick();
                 clearBtn.doClick();
             } catch (Exception ex){
-                JOptionPane.showMessageDialog(mainFrame, ex.getMessage(),
+                JOptionPane.showMessageDialog(mainFrame, "Отчёт не может быть удалён, так как все еще используется!\n" + ex.getMessage(),
                         "Администрирование отчетов", JOptionPane.ERROR_MESSAGE);
             }
         });
 
+        userBtn.addActionListener(e -> {
+            if (selectedReport == null) { return; }
+            try {
+                reportPresenter.getAllUsersOfReport(selectedReport.getId());
+                userBtnChangeState(false, btnPanel);
+            } catch (Exception ex){
+                JOptionPane.showMessageDialog(mainFrame, ex.getMessage(),
+                        "Администрирование отчетов", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
         reportListPanel.getListSelectionModel().addListSelectionListener(e -> {
             reportFieldsPanel.clearData();
@@ -188,7 +206,16 @@ public class ViewReport extends JFrame implements iView<Report> {
         });
     }
 
+    /**
+     * Обработка изменения выбранной позиции в списке отчётов,
+     * изменение информации о выбранном отчёте в панели детализации (слева от списка отчётов)
+     * @param selectedReportLabel - текущий выбранный отчёт, отражён на верхней панели (headpanel)
+     * @param btnPanel - панель кнопок для активации и деактивации кнопок
+     */
     private void changeSelectPositionList(JLabel selectedReportLabel, JPanel btnPanel){
+        if (!selectionModeEnabled) {
+            return;
+        }
         reportFieldsPanel.clearData();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         int idx = reportListPanel.getListReports().getSelectedIndex();
@@ -213,10 +240,38 @@ public class ViewReport extends JFrame implements iView<Report> {
         selectedReportLabel.setText(selectedReport.getRepname());
     }
 
+    /**
+     * Отключение (и восстановление) функциональности кнопок во время демонстрации списка сотрудников,
+     * выполняющих отчёт указанный в головной панели (headpanel)
+     * @param reportsListLoaded флаг определяющий содержимое списка, флаг выключается если загружен список сотрудников,
+     *               включается если загружен список отчётов
+     * @param btnPanel - панель кнопок
+     */
+    private void userBtnChangeState(boolean reportsListLoaded, JPanel btnPanel){
+        if (reportsListLoaded) {
+            btnPanel.getComponent(2).setEnabled(true);
+            btnPanel.getComponent(3).setEnabled(true);
+            btnPanel.getComponent(4).setEnabled(true);
+            btnPanel.getComponent(5).setEnabled(true);
+            selectionModeEnabled = true;
+            ;
+        } else {
+            btnPanel.getComponent(2).setEnabled(false);
+            btnPanel.getComponent(3).setEnabled(false);
+            btnPanel.getComponent(4).setEnabled(false);
+            btnPanel.getComponent(5).setEnabled(false);
+            selectionModeEnabled = false;
+        }
+    }
+
     public Report getSelectedReport() {
         return selectedReport;
     }
 
+    /**
+     * Получение и вывод всего списка отчётов организации
+     * @param item - список переданый из репозитория
+     */
     @Override
     public void getAllReports(List<Report> item) {
         try {
@@ -235,6 +290,10 @@ public class ViewReport extends JFrame implements iView<Report> {
         }
     }
 
+    /**
+     * добавление нового отчёта в список отчетов организации
+     * @return возвращает новый объект типа Report
+     */
     @Override
     public Report add() {
         Report report;
@@ -265,13 +324,22 @@ public class ViewReport extends JFrame implements iView<Report> {
         return report;
     }
 
+    /**
+     * Редактирование существующего отчёта
+     * @return возвращает изменённый объект типа Report
+     */
     @Override
     public Report update() {
-        if ( (reportFieldsPanel.getTfReportName().equals("") &&
+        if ( (reportFieldsPanel.getTfReportName().equals("") ||
+                reportFieldsPanel.getTfStartDate().equals("") ||
                 reportFieldsPanel.getTfReportProgram().equals("")) ||
                 reportList == null
         ){
-            throw new RuntimeException ("Отчёт для редактировния не выбран!");
+            if (reportList == null) {
+                throw new RuntimeException("Отчёт для редактировния не выбран!");
+            } else {
+                throw new RuntimeException("Не все данные заполнены!");
+            }
         }
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -294,6 +362,10 @@ public class ViewReport extends JFrame implements iView<Report> {
         return report;
     }
 
+    /**
+     * Удаление отчёта из списка отчётов организации
+     * @return передаёт объект типа Report в презентер для удаления
+     */
     @Override
     public Report delete() {
         if (getSelectedReport() == null || getSelectedReport().getId() == 0) {
@@ -303,6 +375,32 @@ public class ViewReport extends JFrame implements iView<Report> {
         }
     }
 
+    /**
+     * Получение и вывод списка сотрудников, выполняющих выбранный отчёт
+     * @param item - список переданый из репозитория
+     */
+    @Override
+    public void getAllUsersOfReport(List<String> item) {
+        try {
+            List<String> userList = new ArrayList<>();
+            userList.addAll(item);
+            Collections.sort(userList);
+            String[] users = new String[userList.size()];
+            int idx = 0;
+            for (String user: userList) {
+                users[idx++] = user;
+            }
+            reportListPanel.setListReports(users);
+        } catch (Exception exception) {
+            JOptionPane.showMessageDialog(mainFrame, exception.getMessage(),
+                    "Администрирование отчетов", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Инициализация презентера для работы с кнопками
+     * @param reportPresenter - передаем класс-реализацию интерфейса
+     */
     private void setController(iReportPresenter reportPresenter){
         this.reportPresenter = reportPresenter;
     }

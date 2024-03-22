@@ -1,8 +1,9 @@
 balanceReport\repository\DataBase.class
-balanceReport\logic\ReportData.class
+balanceReport\presenter\iPresenterBalanceReport.class
 balanceReport\logic\ConfigData.class
-balanceReport\logic\ReportChecks.class
-balanceReport\logic\iRepo.class
+balanceReport\presenter\PresenterBalanceReport.class
 balanceReport\logic\ReportSaver.class
+balanceReport\view\iViewBalanceReport.class
 balanceReport\BalanceReport.class
+balanceReport\repository\iRepo.class
 balanceReport\view\ViewBalanceReport.class

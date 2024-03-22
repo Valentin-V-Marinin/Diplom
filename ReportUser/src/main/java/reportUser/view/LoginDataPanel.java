@@ -1,7 +1,7 @@
 package reportUser.view;
 
-import reportUser.logic.HashCount;
-import reportUser.logic.UserLoginData;
+import reportUser.model.HashCount;
+import reportUser.model.UserLoginData;
 import reportUser.presenter.iUserLoginPresenter;
 
 import javax.persistence.NoResultException;
@@ -134,8 +134,8 @@ public class LoginDataPanel extends JPanel implements iViewloginData<UserLoginDa
      * enteprise.access (флаг flagHashOn = true)  и в системную
      * таблицу mysql.user (флаг flagHashOn = false)
      * @param flagHashOn - определяет в каком виде пароль будет записан в таблицу
-     *                  true - зашифрован для записис enterprise.access
-     *                  false - шифрует mysql при записи в mysql.user
+     *                  true - зашифрован для записи в enterprise.access
+     *                  false - шифруется средствами mysql при записи в mysql.user
      * @return - тип UserLoginData - запись из таблицы enterprise.access
      */
     @Override

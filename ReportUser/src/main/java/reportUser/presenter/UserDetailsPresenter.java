@@ -1,6 +1,6 @@
 package reportUser.presenter;
 
-import reportUser.logic.User;
+import reportUser.model.User;
 import reportUser.repository.iUserDetailsRepo;
 import reportUser.view.iViewDetailsData;
 

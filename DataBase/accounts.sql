@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS enterprise.accounts;
 
-CREATE TABLE IF NOT EXISTS enterprise.accounts
+CREATE TABLE IF NOT EXISTS enterprise.accounts 
 (
 id INT PRIMARY 	KEY NOT NULL,
 name    	VARCHAR(85) NOT NULL,

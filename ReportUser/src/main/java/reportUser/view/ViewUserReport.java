@@ -1,6 +1,6 @@
 package reportUser.view;
 
-import reportUser.logic.User;
+import reportUser.model.User;
 import reportUser.presenter.SetReportsPresenter;
 import reportUser.presenter.UserDetailsPresenter;
 import reportUser.presenter.UserLoginPresenter;
@@ -88,7 +88,7 @@ public class ViewUserReport extends JFrame implements iViewDetailsData<User>{
         detailUserPanel.setPreferredSize(new Dimension(210,220));
 
         listUserPanel = new ListUserPanel();
-        setController(new UserDetailsPresenter(this, new UserDetailDB("userDetail.cfg.xml")));
+        setPresenter(new UserDetailsPresenter(this, new UserDetailDB("userDetail.cfg.xml")));
 
         userDataPanel.add(listUserPanel, BorderLayout.CENTER);
         userDataPanel.add(detailUserPanel, BorderLayout.WEST);
@@ -294,8 +294,11 @@ public class ViewUserReport extends JFrame implements iViewDetailsData<User>{
     @Override
     public User edit() {
         if ( (detailUserPanel.getTfUserSurname().getText().equals("") &&
-                detailUserPanel.getTfUserName().getText().equals("")) ||
-                userList == null
+                detailUserPanel.getTfUserName().getText().equals("") &&
+                detailUserPanel.getTfUserPatronymic().getText().equals("") &&
+                detailUserPanel.getTfBirthday().getText().equals("") &&
+                detailUserPanel.getTfStartAction().getText().equals("")
+                ) || userList == null
         ){
             throw new RuntimeException ("Пользователь для редактировния не выбран!");
         }
@@ -329,7 +332,7 @@ public class ViewUserReport extends JFrame implements iViewDetailsData<User>{
         }
     }
 
-    private void setController(iUserDetailsPresenter<User> userDetailsPresenter){
+    private void setPresenter(iUserDetailsPresenter<User> userDetailsPresenter){
         this.userDetailsPresenter = userDetailsPresenter;
     }
 }

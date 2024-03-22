@@ -1,6 +1,6 @@
 package reportAdmin.view;
 
-import reportAdmin.logic.Report;
+import reportAdmin.model.Report;
 
 import javax.swing.*;
 

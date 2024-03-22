@@ -1,0 +1,23 @@
+CREATE DEFINER=`root`@`localhost` TRIGGER `validate_deletion`
+BEFORE DELETE
+ON 'reports'
+AS 
+BEGIN
+
+    SET NOCOUNT ON;
+
+    DECLARE @COUNTER INT
+    SELECT @RecType =(SELECT count(reports_id) FROM user_reports WHERE reports_id = OLD.id GROUP BY reports_id)
+
+    IF @COUNTER > 0
+
+    BEGIN
+        RAISERROR ('THIS REPORT STILL IN USE.', 16, 1)
+        ROLLBACK TRAN
+        RETURN
+    END
+
+    ELSE
+        DELETE FROM reports WHERE id = OLD.id    
+
+END

@@ -9,6 +9,5 @@ public interface iUserDetailsRepo<T, TId> {
     void delete(T item);
     T getById(TId id);
     List<T> getAll();
-
     void closeDB();
 }

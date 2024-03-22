@@ -1,6 +1,6 @@
 package reportUser.presenter;
 
-import reportUser.logic.UserLoginData;
+import reportUser.model.UserLoginData;
 import reportUser.view.iViewloginData;
 import reportUser.repository.iLoginDataRepo;
 

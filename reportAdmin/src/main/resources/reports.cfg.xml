@@ -29,7 +29,7 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Mention annotated entity class -->
-        <mapping class="reportAdmin.logic.Report"/>
+        <mapping class="reportAdmin.model.Report"/>
 
     </session-factory>
 

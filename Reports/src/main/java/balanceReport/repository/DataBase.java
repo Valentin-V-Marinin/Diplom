@@ -1,8 +1,6 @@
 package balanceReport.repository;
 
 
-import balanceReport.logic.iRepo;
-
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -19,7 +17,7 @@ public class DataBase implements iRepo {
 
     public DataBase(String url, String user, String password) {
         if (url.length() == 0) {
-            this.url = "jdbc:mysql://ice9:3306/enterprise";
+            this.url = "jdbc:mysql://localhost:3306/enterprise";
         } else {
             this.url = url;
         }

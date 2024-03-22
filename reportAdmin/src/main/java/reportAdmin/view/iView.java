@@ -12,6 +12,6 @@ public interface iView<T> {
 
     T delete();
 
-
+    void getAllUsersOfReport(List<String> item);
 
 }

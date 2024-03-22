@@ -42,15 +42,13 @@ public class UserReportsPanel extends JPanel implements iViewSetReports {
         add(fullReportsSetLab); add(fullRSjsp);
         add(userReportsSetLab); add(userRSjsp);
 
-        Icon iconLoad = new ImageIcon("C:\\GB\\GB_HomeWorks\\ReportUser\\src\\main\\resources\\load.png");
-        Icon iconAdd  = new ImageIcon("C:\\GB\\GB_HomeWorks\\ReportUser\\src\\main\\resources\\add.png");
-        Icon iconDel  = new ImageIcon("C:\\GB\\GB_HomeWorks\\ReportUser\\src\\main\\resources\\del.png");
-        JButton loadBtn = new JButton(iconLoad); loadBtn.setComponentPopupMenu(new JPopupMenu("Загрузить отчёты"));
-        JButton addBtn  = new JButton(iconAdd);
-        JButton delBtn  = new JButton(iconDel);
-        loadBtn.setBounds(282, 25, 36, 36);
-        addBtn.setBounds(282, 90, 36, 36);
-        delBtn.setBounds(282, 130, 36, 36);
+        JButton loadBtn = new JButton("V");
+        JButton addBtn  = new JButton(">>");
+        JButton delBtn  = new JButton("<<");
+
+        loadBtn.setBounds(274, 26, 50, 25);
+        addBtn.setBounds(274, 107, 50, 25);
+        delBtn.setBounds(274,135, 50, 25);
         add(loadBtn); add(addBtn); add(delBtn);
 
         loadBtn.addActionListener(e -> {

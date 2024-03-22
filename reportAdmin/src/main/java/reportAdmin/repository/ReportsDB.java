@@ -1,6 +1,6 @@
 package reportAdmin.repository;
 
-import reportAdmin.logic.Report;
+import reportAdmin.model.Report;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -76,6 +76,7 @@ public class ReportsDB implements iReportsRepo<Report> {
         session.delete(item);
         session.getTransaction().commit();
     }
+
 
     /**
      * Отключение ДБ

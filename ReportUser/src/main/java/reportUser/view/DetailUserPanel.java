@@ -1,6 +1,6 @@
 package reportUser.view;
 
-import reportUser.logic.User;
+import reportUser.model.User;
 
 import javax.swing.*;
 
